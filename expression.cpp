@@ -35,6 +35,14 @@ expression expression::getConjugate() {
   return exp;
 }
 
+mixedNumber expression::getMagnitude() {
+  return complex.getMagnitude();
+}
+
+mixedNumber expression::getDirection() {
+  return complex.getDirection();
+}
+
 void expression::raiseToPower(const complexNumber& power) {
   complex.power(power);
 }

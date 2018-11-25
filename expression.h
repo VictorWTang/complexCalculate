@@ -1,6 +1,6 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
-#include <complexnumber.h>
+#include "complexnumber.h"
 
 class expression
 {
@@ -14,6 +14,9 @@ public:
   expression getConjugate();
   void setSymbol(char symbol);
   char getSymbol() const;
+  
+  mixedNumber getMagnitude();
+  mixedNumber getDirection();
 
   void raiseToPower(const complexNumber &power);
 

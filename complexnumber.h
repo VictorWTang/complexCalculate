@@ -1,6 +1,6 @@
 #ifndef COMPLEXNUMBER_H
 #define COMPLEXNUMBER_H
-#include <mixednumber.h>
+#include "mixednumber.h"
 
 class complexNumber
 {
