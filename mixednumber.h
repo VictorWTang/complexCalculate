@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "fraction.h"
+#include "streamutilities.h"
 
 class mixedNumber : public fraction
 {
@@ -27,7 +28,6 @@ public:
   std::istream& operator>>( std::istream &in, mixedNumber &m);
 
 private:
-  static bool hasNextInt(std::istream &in);
   void copy(const mixedNumber &other);
   void nukeEveryone();
 };

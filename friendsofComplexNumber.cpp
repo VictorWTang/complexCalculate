@@ -40,6 +40,8 @@ complexNumber operator/(const complexNumber& a, const complexNumber& b)
     return result;
 }
 
+// TODO GET ALEXANDER'S CODE
+// TODO ACCOUNT FOR 2 + i, ie, i with no coeffecient
 std::ostream& operator<<(std::ostream &out, const complexNumber &m)
 {
     out << m.realNumber << " + " << m.imaginaryNumber << "i";
@@ -69,12 +71,21 @@ std::istream& operator>>(std::istream &in, complexNumber &m)
           std::cout << "Character: " << symbol << std::endl;
           if(symbol == '+' || symbol == '-') { // valid character
             std::cout << "New character valid..." << std::endl;
-            if(in >> temp && in.peek() == 'i') { // valid mixed number and i
+            streamUtilities::consumeWhitespace(in);
+            if(streamUtilities::hasNextInt(in) && in >> temp && in.peek() == 'i') { // valid mixed number and i
               std::cout << "Got valid mixed number and next character is an i" << std::endl;
               if(symbol == '+') {
                 m.imaginaryNumber = temp;
               } else {
                 m.imaginaryNumber = temp * -1;
+              }
+              char iTrash;
+              in >> iTrash;
+            } else if(in.peek() == 'i') {
+              if(symbol == '+') {
+                m.imaginaryNumber.setValues(1, 0, 1);
+              } else {
+                m.imaginaryNumber.setValues(-1, 0, 1);
               }
               char iTrash;
               in >> iTrash;

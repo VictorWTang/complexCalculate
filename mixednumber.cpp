@@ -102,7 +102,7 @@ void mixedNumber::nukeEveryone()
       std::cout << "Demon is equal to 1, moving on..." << std::endl;
       std::cout << "Peek is space: " << static_cast<bool>(in.peek() == ' ') << std::endl;
 
-      if(mixedNumber::hasNextInt(in)) {
+      if(streamUtilities::hasNextInt(in)) {
         in >> secondHalf;
         std::cout << "Found second half: " << secondHalf << std::endl;
 
@@ -123,15 +123,3 @@ void mixedNumber::nukeEveryone()
   return in;
 }
 
-bool mixedNumber::hasNextInt(std::istream &in) {
-  while(in.good() && in.peek() == ' ') {
-    in.ignore();
-  }
-  if(in.good()) {
-    char nextChar = static_cast<char>(in.peek());
-    if(nextChar >= '0' && nextChar <= '9') {
-      return true;
-    }
-  }
-  return false;
-}
