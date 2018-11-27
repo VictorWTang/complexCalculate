@@ -74,12 +74,18 @@ mixedNumber complexNumber::getMagnitude() //find r
     //magnitute is found by taking the real number (p) and the imaginary number (q)
     //  squaring them, adding them together, then taking the square root
     //sqrt( p^2 + q^2)
-    mixedNumber p = getReal(), q = getImaginary();
-    p = p^2;
-    q = q^2;
-    p = p + q;
-    q = p * p;
-    return q;
+//    mixedNumber p = getReal(), q = getImaginary();
+//    p = p^2;
+//    q = q^2;
+//    p = p + q;
+//    q = p * p;
+  double realDouble = static_cast<double>(realNumber.getNum()) / realNumber.getDenom();
+  double realDoubleSquared = realDouble * realDouble;
+  double imaginaryDouble = static_cast<double>(imaginaryNumber.getNum()) / imaginaryNumber.getDenom();
+  double imaginaryDoubleSquared = imaginaryDouble * imaginaryDouble;
+  double magnitude = sqrt(realDoubleSquared + imaginaryDoubleSquared);
+  mixedNumber result(magnitude);
+  return result;
 }
 mixedNumber complexNumber::getDirection() //find (theta)
 {
