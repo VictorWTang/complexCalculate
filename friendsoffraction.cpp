@@ -31,6 +31,7 @@ std::istream& operator>>(std::istream& in, fraction &frac)
     }
     if(in>>frac.num)
     {
+      std::cout << "Found frac num:" << frac.num << std::endl;
       if(in.peek() == '/' && in >> junk && in >> possibleDenom) {
         frac.denom = possibleDenom;
       } else {
@@ -41,8 +42,8 @@ std::istream& operator>>(std::istream& in, fraction &frac)
         frac.num *= -1;
       }
       in.clear();
-    }
-    else {
+    } else {
+      std::cout << "Invalid fraction: " << in.good() << std::endl;
     }
   }
   return in;

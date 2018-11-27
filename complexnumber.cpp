@@ -1,74 +1,158 @@
-#include "complexnumber.h"
+//
+// Created by Alexander Dimopoulos on 11/25/18.
+//
+#include "complexNumber.h"
+#include <math.h>
+#define _USE_MATH_DEFINES
 
 complexNumber::complexNumber()
 {
-
+    realNumber = 0;
+    imaginaryNumber = 0;
 }
 
-complexNumber::complexNumber(mixedNumber realPart, mixedNumber imaginaryPart) {
-
+complexNumber::~complexNumber()
+{
+    eraseAll();
 }
 
-complexNumber::~complexNumber() {
-
+complexNumber::complexNumber(const mixedNumber &a, const mixedNumber &b)
+{
+    setValue(a, b);
 }
 
-complexNumber::complexNumber(const complexNumber& other) {
-
+void setValue(const complexNumber &a, const complexNumber &b)
+{
+    setValue(a, b);
 }
 
-complexNumber& complexNumber::operator=(const complexNumber& other) {
 
+complexNumber& complexNumber::operator=(const complexNumber &other)
+{
+    if(this != &other)
+        copy(other);
+    return *this;
 }
 
-mixedNumber complexNumber::getReal() {
-
+mixedNumber complexNumber::getReal()
+{
+    return realNumber;
 }
 
-mixedNumber complexNumber::getImaginary() {
-
+mixedNumber complexNumber::getImaginary()
+{
+    return imaginaryNumber;
 }
 
-complexNumber complexNumber::getConjugate() {
+complexNumber complexNumber::getConjugate()
+{
+    //create a complexNumber object newbie
+    //check if there is a denominator
+    //if yes, get its value and make sure the answer has a numerator and denominator
+    //else take the sign for the imaginary number and flip it (ex. - => +)
+    //return newbie
 
+    mixedNumber imNew;
+    complexNumber newbie;
+
+    imNew= this->imaginaryNumber * -1;
+    newbie.setValue(this->realNumber, imNew);
+
+    return newbie;
 }
 
-void complexNumber::power(const complexNumber& raiseTo) {
-
+complexNumber complexNumber::pow(const complexNumber& base, const complexNumber& exponent)
+{
+    //figure out how to take a complex number to the power of another complex number
+    complexNumber send;
+    send = pow(base, exponent);
+    return send;
 }
 
-mixedNumber complexNumber::getMagnitude() {
+mixedNumber complexNumber::getMagnitude() //find r
+{
+    //magnitute is found by taking the real number (p) and the imaginary number (q)
+    //  squaring them, adding them together, then taking the square root
+    //sqrt( p^2 + q^2)
+    mixedNumber p = getReal(), q = getImaginary();
+    p = p^2;
+    q = q^2;
+    p = p + q;
+    q = p * p;
+    return q;
+}
+mixedNumber complexNumber::getDirection() //find (theta)
+{
+    //if p > 0 use: (theta) = tan^-1(q/p)
+    //if p < 0 use: (theta) = tan^-1(q/p) + pi
 
+    mixedNumber result;
+    result = realNumber / imaginaryNumber;
+   // result = atan(result);
+
+    if(realNumber < 0)
+        result += M_PI;
+
+    return result;
 }
 
-mixedNumber complexNumber::getDirection() {
-
+void complexNumber::getPolar()
+{
+    mixedNumber r = getMagnitude();
+    mixedNumber theta = getDirection();
+    std::cout<<"Polar Coordinates: ("<<r<<", "<<theta<<")"<<std::endl;
 }
 
-bool complexNumber::isOrthogonalTo(const complexNumber& other) {
+bool complexNumber::isOrthogonal(const complexNumber &other)
+{
+    bool send;
+    if(this->realNumber == other.imaginaryNumber * -1 &&
+                          this->imaginaryNumber == other.realNumber * -1)
+        send = true;
+    else
+        send = false;
 
+    return send;
 }
 
-complexNumber operator+(const complexNumber& x, const complexNumber& y) {
-
+void complexNumber::setValue(const mixedNumber &a, const mixedNumber &b)
+{
+    realNumber = a;
+    imaginaryNumber = b;
 }
 
-complexNumber operator-(const complexNumber& x, const complexNumber& y) {
-
+void complexNumber::eraseAll()
+{
+    realNumber = 0;
+    imaginaryNumber = 0;
 }
 
-complexNumber operator*(const complexNumber& x, const complexNumber& y) {
-
+void complexNumber::copy(const complexNumber& other)
+{
+    this->imaginaryNumber = other.imaginaryNumber;
+    this->realNumber = other.realNumber;
 }
 
-complexNumber operator/(const complexNumber& x, const complexNumber& y) {
-
+complexNumber& complexNumber::operator+=(const complexNumber& other)
+{
+    *this = *this + other;
+    return *this;
 }
 
-std::ostream& operator<<(std::ostream& out, const complexNumber& complex) {
-
+complexNumber& complexNumber::operator-=(const complexNumber& other)
+{
+    *this = *this - other;
+    return *this;
 }
 
-std::istream& operator>>(std::istream& in, complexNumber& complex) {
+complexNumber& complexNumber::operator*=(const complexNumber& other)
+{
+    *this = *this * other;
+    return *this;
+}
 
+complexNumber& complexNumber::operator/=(const complexNumber& other)
+{
+    *this = *this / other;
+    return *this;
 }

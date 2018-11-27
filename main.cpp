@@ -2,7 +2,6 @@
 #include <sstream>
 #include <map>
 #include <regex>
-#include <fstream>
 #include "memories.h"
 
 using namespace std;
@@ -26,8 +25,12 @@ void setUpFileIO(ifstream &inputFile, ofstream &outputFile, programData settings
 void setUpCommandMap(map<string, programCommand> &commandMap);
 void processCommands(istream& in, memories &numberMemory, ofstream& outputFile, programData settings, map<string, programCommand> &commandMap);
 void processCommandLineParameters(int argc, char** argv, programData settings, memories &numberMemory);
-void parseExpression(istream &in, memories &numberMemory, char symbol);
-void trig(complexNumber &complex);
+void parseExpression(istream &in, memories &numberMemory, char symbol, bool &hasSaved);
+char getFirstSymbol(const string &command);
+char getSecondSymbol(const string &command);
+void trig(memories &numberMemory, char symbol);
+void magnitude(memories &numberMemory, char symbol);
+void orthogonal(memories &numberMemory, char leftSymbol, char rightSymbol);
 void printHelp();
 void let(istream& in, memories &numberMemory, bool &hasSaved);
 void print(istream& in, memories &numberMemory, bool &hasSaved);
@@ -55,6 +58,42 @@ int main(int argc, char** argv)
 
   map<string, programCommand> commandMap;
   setUpCommandMap(commandMap);
+
+  // DEBUG
+
+//  string test = "LET A = 3";
+//  stringstream strs;
+//  strs << test;
+
+//  string stringTest;
+//  strs >> stringTest;
+//  cout << stringTest << endl;
+
+//  let(strs, complexNumberMemory, settings.hasSaved);
+//  cout << complexNumberMemory.get('A') << endl;
+//  while(true) {
+//    fraction frac;
+//    cout << "Enter fraction: ";
+//    cin >> frac;
+//    cout << "You entered: " << frac << endl;
+//  }
+//  string test = " + ";
+//  int testInt = 9999;
+//  stringstream testStream;
+//  testStream << test;
+//  testStream >> testInt;
+//  string line;
+//  getline(testStream, line);
+//  cout << "Int value: " << testInt << endl;
+//  cout << "line: " << line << endl;
+//  while(true) {
+//    complexNumber complex;
+//    cout << "Enter complex number: ";
+//    cin >> complex;
+//    cout << "You entered: " << complex << endl;
+//  }
+
+  // END DEBUG
 
   if(settings.executeEnabled) {
     processCommands(inputFile, complexNumberMemory, outputFile, settings, commandMap);
@@ -119,63 +158,71 @@ void processCommands(istream& in, memories &numberMemory, ofstream& outputFile, 
 
     if(command.length() == 1) {
       char symbol = command.at(0);
-      parseExpression(ss, numberMemory, symbol);
+      parseExpression(ss, numberMemory, symbol, settings.hasSaved);
+    } else if(regex_match(command, regex("^Trig\\([A-Z]\\)$"))) { // Note: regex matches a string "Trig(X)", where x is any, single capital letter
+//      try {
+//        trig(numberMemory, getFirstSymbol(command));
+//      } catch () {
+
+//      } TODO
+    } else if(regex_match(command, regex("^Magnitude\\([A-Z]\\)$"))) {
+      magnitude(numberMemory, getFirstSymbol(command));
+    } else if(regex_match(line, regex("^Orthogonal\\([A-Z],\\s?[A-Z]\\)$"))) { // Note: "\s?" matches zero or one instance of whitespace
+      orthogonal(numberMemory, getFirstSymbol(line), getSecondSymbol(line));
     } else {
       try {
-        commandMap.at(command)(in, numberMemory, settings.hasSaved);
+        commandMap.at(command)(ss, numberMemory, settings.hasSaved);
       } catch (const out_of_range& oor) {
         cout << "ERROR: Invalid command: " << command << endl;
       }
     }
-
   }
 }
 
-void parseExpression(istream &in, memories &numberMemory, char symbol) {
+// TODO TEST THIS FUNCTION!!!!
+void parseExpression(istream &in, memories &numberMemory, char symbol, bool &hasSaved) {
+  cout << "Pasre expression called, symbol: " << symbol << endl;
   char rightSymbol1, rightSymbol2, operation, equalsTrash;
   string tempOperation;
   in >> equalsTrash;
   getline(in, tempOperation);
 
-  if(regex_match(tempOperation, regex("^Trig\\([A-Z]\\)$"))) {
-    trig(numberMemory.get(symbol));
+  stringstream ss;
+  ss << tempOperation;
+  ss >> rightSymbol1;
+  if(rightSymbol1 == '~') {
+    numberMemory.get(symbol) = numberMemory.get(symbol).getConjugate();
   } else {
-    stringstream ss;
-    ss << tempOperation;
-    ss >> rightSymbol1;
-    bool operationSuccessful = true;
-    if(rightSymbol1 == '~') {
-      numberMemory.get(symbol) = numberMemory.get(symbol).getConjugate();
-    } else {
-      ss >> operation >> rightSymbol2;
-      switch(operation) {
-      case '+':
-        numberMemory.get(symbol) = numberMemory.get(rightSymbol1) + numberMemory.get(rightSymbol2);
-        break;
-      case '-':
-        numberMemory.get(symbol) = numberMemory.get(rightSymbol1) - numberMemory.get(rightSymbol2);
-        break;
-      case '*':
-        numberMemory.get(symbol) = numberMemory.get(rightSymbol1) * numberMemory.get(rightSymbol2);
-        break;
-      case '/':
-        numberMemory.get(symbol) = numberMemory.get(rightSymbol1) / numberMemory.get(rightSymbol2);
-        break;
-      default:
-        cout << "ERROR: Unknown operation: " << operation << endl;
-        operationSuccessful = false;
-      }
-    }
-    if(operationSuccessful) {
-      numberMemory.printSymbolToStream(cout, symbol);
+    ss >> operation >> rightSymbol2;
+    switch(operation) {
+    case '+':
+      numberMemory.get(symbol) = numberMemory.get(rightSymbol1) + numberMemory.get(rightSymbol2);
+      break;
+    case '-':
+      numberMemory.get(symbol) = numberMemory.get(rightSymbol1) - numberMemory.get(rightSymbol2);
+      break;
+    case '*':
+      numberMemory.get(symbol) = numberMemory.get(rightSymbol1) * numberMemory.get(rightSymbol2);
+      break;
+    case '/':
+      numberMemory.get(symbol) = numberMemory.get(rightSymbol1) / numberMemory.get(rightSymbol2);
+      break;
+    case '^':
+      numberMemory.get(symbol) = complexNumber::pow(numberMemory.get(rightSymbol1), numberMemory.get(rightSymbol2));
+      break;
+    default:
+      cout << "ERROR: Unknown operation: " << operation << endl;
+      return;
     }
   }
+  hasSaved = false;
+  numberMemory.printSymbolToStream(cout, symbol);
 }
 
 void let(istream& in, memories &numberMemory, bool &hasSaved) {
-  char symbol;
+  char symbol, equalsTrash;
   complexNumber complex;
-  if(in >> symbol >> complex) {
+  if(in >> symbol >> equalsTrash >> complex && equalsTrash == '=') {
     try {
       numberMemory.get(symbol) = complex;
     } catch (memories::ERRORS error) {
@@ -183,6 +230,7 @@ void let(istream& in, memories &numberMemory, bool &hasSaved) {
         cout << "ERROR: Invalid symbol: " << symbol << endl;
       }
     }
+    numberMemory.printSymbolToStream(cout, symbol);
   } else {
     cout << "ERROR: Could not interpret expression." << endl;
   }
@@ -235,10 +283,10 @@ void load(istream& in, memories &numberMemory, bool &hasSaved) {
 void exit(istream& in, memories &numberMemory, bool &hasSaved) {
   if(hasSaved == false) {
     cout << "WARNING: You have not saved your current expression list." << endl;
-    cout << "         Do you wish to save your expressions? (Y/N)";
+    cout << "         Do you wish to save your expressions? (Y/N) ";
     if(getConfirmation()) {
       cout << "Filename to save to: ";
-      save(in, numberMemory, hasSaved);
+      save(cin, numberMemory, hasSaved);
     }
   }
   exit(EXIT_SUCCESS);
@@ -328,8 +376,31 @@ bool confirmFileOverwrite(const string &filename) {
   }
 }
 
-void trig(complexNumber &complex) {
-  cout << "(" << complex.getMagnitude() << ", " << complex.getDirection() << ")" << endl;
+void trig(memories &numberMemory, char symbol) {
+  cout << "Polar form of " << symbol << ": (" << numberMemory.get(symbol).getMagnitude()
+       << ", " << numberMemory.get(symbol).getDirection() << ")" << endl;
+}
+
+char getFirstSymbol(const string &command) {
+  unsigned int symbolPosition = command.find("(") + 1;
+  return command.at(symbolPosition);
+}
+
+char getSecondSymbol(const string &command) {
+  unsigned int symbolPosition = command.find(")") - 1;
+  return command.at(symbolPosition);
+}
+
+void magnitude(memories &numberMemory, char symbol) {
+  cout << "Magnitude of " << symbol << ": " << numberMemory.get(symbol).getMagnitude() << endl;
+}
+
+void orthogonal(memories &numberMemory, char leftSymbol, char rightSymbol) {
+  if(numberMemory.get(leftSymbol).isOrthogonal(numberMemory.get(rightSymbol))) {
+    cout << leftSymbol <<  " is orthogonal to " << rightSymbol << endl;
+  } else {
+    cout << leftSymbol <<  " is not orthogonal to " << rightSymbol << endl;
+  }
 }
 
 

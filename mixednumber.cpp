@@ -97,9 +97,20 @@ void mixedNumber::nukeEveryone()
   std::stringstream ss;
   fraction firstHalf, secondHalf;
   if(in >> firstHalf) {
+    std::cout << "found first half: " << firstHalf << std::endl;
     if(firstHalf.getDenom() == 1) {
-      if(in.peek() == ' ' && in >> secondHalf) {
-        m.setValue(secondHalf.getNum(), secondHalf.getDenom());
+      std::cout << "Demon is equal to 1, moving on..." << std::endl;
+      std::cout << "Peek is space: " << static_cast<bool>(in.peek() == ' ') << std::endl;
+
+      if(mixedNumber::hasNextInt(in)) {
+        in >> secondHalf;
+        std::cout << "Found second half: " << secondHalf << std::endl;
+
+        if(firstHalf.getNum() > 0) {
+          m.setValue(secondHalf.getNum(), secondHalf.getDenom());
+        } else {
+          m.setValue(secondHalf.getNum() * -1, secondHalf.getDenom());
+        }
         m.num += firstHalf.getNum() * secondHalf.getDenom();
       } else {
         m.setValue(firstHalf.getNum());
@@ -110,4 +121,17 @@ void mixedNumber::nukeEveryone()
     in.clear();
   }
   return in;
+}
+
+bool mixedNumber::hasNextInt(std::istream &in) {
+  while(in.good() && in.peek() == ' ') {
+    in.ignore();
+  }
+  if(in.good()) {
+    char nextChar = static_cast<char>(in.peek());
+    if(nextChar >= '0' && nextChar <= '9') {
+      return true;
+    }
+  }
+  return false;
 }
