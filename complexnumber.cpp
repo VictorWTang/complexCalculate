@@ -60,7 +60,7 @@ complexNumber complexNumber::getConjugate()
 
     return newbie;
 }
-
+// TODO
 complexNumber complexNumber::pow(const complexNumber& base, const complexNumber& exponent)
 {
     //figure out how to take a complex number to the power of another complex number

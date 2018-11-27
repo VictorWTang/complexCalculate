@@ -61,6 +61,12 @@ int main(int argc, char** argv)
 
   // DEBUG
 
+//  complexNumber test;
+//  cin >> test;
+//  cout << "You entered: " << test << endl;
+//  cout << "Conjugate: " << test.getConjugate() << endl;
+
+
 //  string test = "LET A = 3";
 //  stringstream strs;
 //  strs << test;
@@ -191,7 +197,8 @@ void parseExpression(istream &in, memories &numberMemory, char symbol, bool &has
   ss << tempOperation;
   ss >> rightSymbol1;
   if(rightSymbol1 == '~') {
-    numberMemory.get(symbol) = numberMemory.get(symbol).getConjugate();
+    ss >> rightSymbol2;
+    numberMemory.get(symbol) = numberMemory.get(rightSymbol2).getConjugate();
   } else {
     ss >> operation >> rightSymbol2;
     switch(operation) {
