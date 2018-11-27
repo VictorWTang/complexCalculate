@@ -87,6 +87,8 @@ mixedNumber complexNumber::getMagnitude() //find r
   mixedNumber result(magnitude);
   return result;
 }
+
+// TODO GET ALEXANDER'S CODE
 mixedNumber complexNumber::getDirection() //find (theta)
 {
     //if p > 0 use: (theta) = tan^-1(q/p)
@@ -111,14 +113,8 @@ void complexNumber::getPolar()
 
 bool complexNumber::isOrthogonal(const complexNumber &other)
 {
-    bool send;
-    if(this->realNumber == other.imaginaryNumber * -1 &&
-                          this->imaginaryNumber == other.realNumber * -1)
-        send = true;
-    else
-        send = false;
-
-    return send;
+    fraction dotProduct = realNumber * other.imaginaryNumber + imaginaryNumber * other.realNumber;
+    return dotProduct.getNum() == 0;
 }
 
 void complexNumber::setValue(const mixedNumber &a, const mixedNumber &b)
