@@ -44,7 +44,7 @@ mixedNumber complexNumber::getImaginary()
     return imaginaryNumber;
 }
 
-complexNumber complexNumber::getConjugate()
+complexNumber complexNumber::getConjugate() const
 {
     //create a complexNumber object newbie
     //check if there is a denominator
@@ -60,7 +60,7 @@ complexNumber complexNumber::getConjugate()
 
     return newbie;
 }
-// TODO
+// TODO IMPLEMENT POWER FUNCTION
 complexNumber complexNumber::pow(const complexNumber& base, const complexNumber& exponent)
 {
     //figure out how to take a complex number to the power of another complex number
@@ -89,6 +89,8 @@ mixedNumber complexNumber::getMagnitude() //find r
 }
 
 // TODO GET ALEXANDER'S CODE
+// TODO IMPLEMENT UNDEFINED DIRECTION THROWING
+// IE, throw(UNDEFINED_DIRECTION)
 mixedNumber complexNumber::getDirection() //find (theta)
 {
     //if p > 0 use: (theta) = tan^-1(q/p)
@@ -113,7 +115,7 @@ void complexNumber::getPolar()
 
 bool complexNumber::isOrthogonal(const complexNumber &other)
 {
-    fraction dotProduct = realNumber * other.imaginaryNumber + imaginaryNumber * other.realNumber;
+    fraction dotProduct = realNumber * other.realNumber + imaginaryNumber * other.imaginaryNumber;
     return dotProduct.getNum() == 0;
 }
 

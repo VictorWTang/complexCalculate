@@ -4,11 +4,10 @@
 #include <regex>
 #include "memories.h"
 
+// TODO REMOVE DEBUG MESSAGES
+// TODO IS 0 + 0i ORTHOGONAL TO OTHER VECTORS? IS THIS BEHAVIOUR DEFINED?
+
 using namespace std;
-/*
- * TODO:
- *
- */
 
 typedef void (*programCommand)(istream& in, memories &numberMemory, bool &hasSaved);
 
@@ -166,11 +165,13 @@ void processCommands(istream& in, memories &numberMemory, ofstream& outputFile, 
       char symbol = command.at(0);
       parseExpression(ss, numberMemory, symbol, settings.hasSaved);
     } else if(regex_match(command, regex("^Trig\\([A-Z]\\)$"))) { // Note: regex matches a string "Trig(X)", where x is any, single capital letter
-//      try {
-//        trig(numberMemory, getFirstSymbol(command));
-//      } catch () {
-
-//      } TODO
+      try {
+        trig(numberMemory, getFirstSymbol(command));
+      } catch (complexNumber::ERRORS e) {
+        if(e == complexNumber::UNDEFINED_DIRECTION) {
+          cout << "undefined direction." << endl;
+        }
+      }
     } else if(regex_match(command, regex("^Magnitude\\([A-Z]\\)$"))) {
       magnitude(numberMemory, getFirstSymbol(command));
     } else if(regex_match(line, regex("^Orthogonal\\([A-Z],\\s?[A-Z]\\)$"))) { // Note: "\s?" matches zero or one instance of whitespace
@@ -185,7 +186,6 @@ void processCommands(istream& in, memories &numberMemory, ofstream& outputFile, 
   }
 }
 
-// TODO TEST THIS FUNCTION!!!!
 void parseExpression(istream &in, memories &numberMemory, char symbol, bool &hasSaved) {
   cout << "Pasre expression called, symbol: " << symbol << endl;
   char rightSymbol1, rightSymbol2, operation, equalsTrash;
@@ -212,7 +212,18 @@ void parseExpression(istream &in, memories &numberMemory, char symbol, bool &has
       numberMemory.get(symbol) = numberMemory.get(rightSymbol1) * numberMemory.get(rightSymbol2);
       break;
     case '/':
-      numberMemory.get(symbol) = numberMemory.get(rightSymbol1) / numberMemory.get(rightSymbol2);
+      try {
+        numberMemory.get(symbol) = numberMemory.get(rightSymbol1) / numberMemory.get(rightSymbol2);
+      } catch (fraction::ERRORS e) {
+        if(e == fraction::DIVIDE_BY_ZERO) {
+          cout << "ERROR: Cannot divide by zero!" << endl;
+          return;
+        }
+      } /*catch (complexNumber::ERRORS e) {
+        if(e == complexNumber::ZERO_DIVIDE) {
+          cout << "ERROR: Unable to divide"
+        }
+      }*/
       break;
     case '^':
       numberMemory.get(symbol) = complexNumber::pow(numberMemory.get(rightSymbol1), numberMemory.get(rightSymbol2));
@@ -384,8 +395,17 @@ bool confirmFileOverwrite(const string &filename) {
 }
 
 void trig(memories &numberMemory, char symbol) {
-  cout << "Polar form of " << symbol << ": (" << numberMemory.get(symbol).getMagnitude()
-       << ", " << numberMemory.get(symbol).getDirection() << ")" << endl;
+  mixedNumber magnitude = numberMemory.get(symbol).getMagnitude();
+  mixedNumber direction;
+  try {
+    direction = numberMemory.get(symbol).getDirection();
+  } catch (complexNumber::ERRORS e) {
+    if(e == complexNumber::UNDEFINED_DIRECTION) {
+//      direction = 0;
+    }
+  }
+  cout << "Polar form of " << symbol << ": (" << magnitude
+       << ", " << direction << ")" << endl;
 }
 
 char getFirstSymbol(const string &command) {
@@ -402,6 +422,8 @@ void magnitude(memories &numberMemory, char symbol) {
   cout << "Magnitude of " << symbol << ": " << numberMemory.get(symbol).getMagnitude() << endl;
 }
 
+
+// TODO TEST FUNCTION
 void orthogonal(memories &numberMemory, char leftSymbol, char rightSymbol) {
   if(numberMemory.get(leftSymbol).isOrthogonal(numberMemory.get(rightSymbol))) {
     cout << leftSymbol <<  " is orthogonal to " << rightSymbol << endl;

@@ -5,10 +5,10 @@
 class memories
 {
 public:
+  enum ERRORS {SYMBOL_OUT_OF_RANGE, FILE_DOES_NOT_EXIST};
+
   memories();
   ~memories();
-
-  enum ERRORS {SYMBOL_OUT_OF_RANGE, FILE_DOES_NOT_EXIST};
 
   void setComplexNumber(char symbol, const complexNumber &complex);
   complexNumber& get(char symbol);

@@ -9,6 +9,7 @@
 class fraction
 {
 public:
+  enum ERRORS {DIVIDE_BY_ZERO};
   /*
          * The default constructor makes an "empty"
          * object, and is required ALL the time!

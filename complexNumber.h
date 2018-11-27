@@ -9,6 +9,7 @@
 
 class complexNumber {
 public:
+  enum ERRORS {UNDEFINED_DIRECTION, ZERO_DIVIDE};
     complexNumber();
     ~complexNumber();
     complexNumber(const mixedNumber &, const mixedNumber &);
@@ -27,7 +28,7 @@ public:
 
     mixedNumber getReal();
     mixedNumber getImaginary();
-    complexNumber getConjugate();
+    complexNumber getConjugate() const;
     static complexNumber pow(const complexNumber&, const complexNumber&);
     mixedNumber getMagnitude();
     mixedNumber getDirection();

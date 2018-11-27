@@ -34,10 +34,16 @@ complexNumber operator*(const complexNumber& a, const complexNumber& b)
 
 complexNumber operator/(const complexNumber& a, const complexNumber& b)
 {
-    complexNumber result;
-    result.realNumber = a.realNumber / b.realNumber;
-    result.imaginaryNumber = a.imaginaryNumber / b.imaginaryNumber;
-    return result;
+  // Division is computed by multiplying the numerator and denominator by the conjugate of the denominator,
+  //  then by dividing, separately, the real and imaginary components by the resulting denominator
+  //  By multiplying the denominator by its conjugate, its imaginary component is eliminated
+  complexNumber conjugate = b.getConjugate();
+  complexNumber numerator = a * conjugate;
+  mixedNumber denominator = (b * conjugate).getReal();
+  complexNumber result;
+  result.realNumber = numerator.getReal() / denominator;
+  result.imaginaryNumber = numerator.getImaginary() / denominator;
+  return result;
 }
 
 // TODO GET ALEXANDER'S CODE

@@ -33,6 +33,9 @@ std::istream& operator>>(std::istream& in, fraction &frac)
     {
       std::cout << "Found frac num:" << frac.num << std::endl;
       if(in.peek() == '/' && in >> junk && in >> possibleDenom) {
+        if(possibleDenom == 0) {
+          throw(fraction::DIVIDE_BY_ZERO);
+        }
         frac.denom = possibleDenom;
       } else {
         frac.denom = 1;
@@ -78,6 +81,9 @@ fraction operator*(const fraction &x,const fraction &y)
 
 fraction operator/(const fraction &x,const fraction &y)
 {
+  if(y.num == 0) {
+    throw(fraction::DIVIDE_BY_ZERO);
+  }
   fraction result;
   int num = x.num * y.denom,
       denom = x.denom * y.num;
